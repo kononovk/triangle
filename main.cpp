@@ -1,75 +1,55 @@
 #include <iostream>
+#include <cmath>
+#include <memory>
+
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 #include <GL/gl.h>
-#include <GL/glu.h>
 
-Display *dpy;
-Window win;
-GLXContext ctx;
+namespace globals {
+
 int width, height;
 bool redisp_pending;
 Atom xa_wm_prot, xa_wm_del_win;
-/* camera control */
-float cam_theta, cam_phi = 25, cam_dist = 6;
-int mbutton[8], prev_mx, prev_my;
-float ldir[] = {-1, 1, 2, 0};
-
-int global_x = 0;
-int global_y = 0;
-
+int global_x = 0, global_y = 0;
 bool to_draw = false;
 
-void reshape(int x, int y) {
-  glViewport(0, 0, x, y);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(50.0, (float) x / (float) y, 0.5, 500.0);
-}
+} // namespace globals;
 
-void redraw() {
+
+namespace {
+void redraw(Display *dpy, Window win) {
   glClearColor(0.145, 0.521, 0.294, 0.004);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  if (to_draw) {
+  if (globals::to_draw) {
     glLoadIdentity();
     XWindowAttributes winattr;
     XGetWindowAttributes(dpy, win, &winattr);
     glViewport(0, 0, winattr.width, winattr.height);
-    float x = (float)global_x / (float)width - 0.5f;
-    double y = global_y;
+
+    float x = 2.f * static_cast<float>(globals::global_x) / static_cast<float>(globals::width) - 1.f;
+    float y = -(2.f * static_cast<float>(globals::global_y) / static_cast<float>(globals::height) - 1.f);
+    float h = 200.f;
+    float segment = h * 2.f / std::sqrt(3.f); // len of triangle segment
+    float left_x = static_cast<float>(globals::global_x) - segment / 2.f; // left x coordinate
+    float right_x = static_cast<float>(globals::global_x) + segment / 2.f; // right x coordinate
+    float other_y = static_cast<float>(globals::global_y) + h;
+
     glColor3f(1.f, 0.f, 0.f);
     glBegin(GL_TRIANGLES);
-    glVertex3f(x, 0.f, 0.f);
-    glVertex3f(-1.f, -0.5f, 0.f);
-    glVertex3f(1.f, -0.5f, 0.f);
+    glVertex2f(x, y);
+    glVertex2f(2.f * left_x / static_cast<float>(globals::width) - 1.f,
+               -(2.f * other_y / static_cast<float>(globals::height) - 1.f));
+    glVertex2f(2.f * right_x / static_cast<float>(globals::width) - 1.f,
+               -(2.f * other_y / static_cast<float>(globals::height) - 1.f));
     glEnd();
   }
-
   glXSwapBuffers(dpy, win);
 }
 
-
-void mouse_button(unsigned int bn, int state, int x, int y) {
-  if (state == 1) {
-    to_draw = true;
-    redisp_pending = true;
-    global_x = x;
-    global_y = y;
-  } else {
-    to_draw = false;
-    redisp_pending = true;
-  }
-}
-
-void mouse_motion(int x, int y) {
-  global_x = x;
-  global_y = y;
-}
-
-
-Window create_window(int xsz, int ysz) {
+Window create_window(Display *dpy, int xsz, int ysz) {
+  GLXContext ctx;
   Window w, root;
-  XVisualInfo *vis;
   XClassHint chint;
   XSetWindowAttributes xattr;
   unsigned int evmask, xattr_mask;
@@ -87,12 +67,16 @@ Window create_window(int xsz, int ysz) {
   scr = DefaultScreen(dpy);
   root = RootWindow(dpy, scr);
 
-  if (!(vis = glXChooseVisual(dpy, scr, glxattr))) {
-    printf("failed to find a suitable visual\n");
+  auto deleter_vis = [](XVisualInfo *vis) {
+    XFree(vis);
+  };
+  auto vis = std::unique_ptr<XVisualInfo, decltype(deleter_vis)> {glXChooseVisual(dpy, scr, glxattr), deleter_vis};
+  if (!vis) {
+    std::cout << "failed to find a suitable visual" << std::endl;
     return 0;
   }
-  if (!(ctx = glXCreateContext(dpy, vis, nullptr, true)))  {
-    XFree(vis);
+
+  if (!(ctx = glXCreateContext(dpy, vis.get(), nullptr, true))) {
     return 0;
   }
 
@@ -102,41 +86,36 @@ Window create_window(int xsz, int ysz) {
 
   if (!(w = XCreateWindow(dpy, root, 0, 0, xsz, ysz, 0, vis->depth, InputOutput,
                           vis->visual, xattr_mask, &xattr))) {
-    printf("failed to create window\n");
+    std::cout << "failed to create window" << std::endl;
     glXDestroyContext(dpy, ctx);
-    XFree(vis);
     return 0;
   }
-  XFree(vis);
 
   evmask = StructureNotifyMask | VisibilityChangeMask | KeyPressMask |
            ExposureMask | ButtonPressMask | ButtonReleaseMask | ButtonMotionMask;
   XSelectInput(dpy, w, evmask);
 
-  XSetWMProtocols(dpy, w, &xa_wm_del_win, 1);
+  XSetWMProtocols(dpy, w, &globals::xa_wm_del_win, 1);
 
-  chint.res_name = chint.res_class = (char *) "glx-example";
+  char name[] = {"glx-example"};
+  chint.res_name = chint.res_class = name;
   XSetClassHint(dpy, w, &chint);
-
   const char *title = "TRIANGLE";
 
   XTextProperty wm_name;
-  XStringListToTextProperty((char **) &title, 1, &wm_name);
+  XStringListToTextProperty(const_cast<char **>(&title), 1, &wm_name);
   XSetWMName(dpy, w, &wm_name);
-  XSetWMIconName(dpy, w, &wm_name);
   XFree(wm_name.value);
-
   glXMakeCurrent(dpy, w, ctx);
   XMapWindow(dpy, w);
   return w;
 }
 
-
 bool handle_event(XEvent *ev) {
   bool quit = false;
   switch (ev->type) {
     case Expose: {
-      redisp_pending = true;
+      globals::redisp_pending = true;
       break;
     }
     case KeyPress: {
@@ -145,58 +124,64 @@ bool handle_event(XEvent *ev) {
         case 27:
         case 'q':
         case 'Q':
-          return true;
+          quit = true;
         default:
           break;
       }
       break;
     }
     case ConfigureNotify: {
-      if (ev->xconfigure.width != width || ev->xconfigure.height != height) {
-        width = ev->xconfigure.width;
-        height = ev->xconfigure.height;
-        reshape(width, height);
+      if (ev->xconfigure.width != globals::width || ev->xconfigure.height != globals::height) {
+        globals::width = ev->xconfigure.width;
+        globals::height = ev->xconfigure.height;
         break;
       }
     }
     case ClientMessage: {
-      if (ev->xclient.message_type == xa_wm_prot) {
-        if (ev->xclient.data.l[0] == xa_wm_del_win) {
-          quit = true;
-          break;
-        }
+      if (ev->xclient.message_type == globals::xa_wm_prot &&
+          ev->xclient.data.l[0] == globals::xa_wm_del_win) {
+        quit = true;
       }
       break;
     }
     case ButtonPress: {
-      std::cout << "Press: " << ev->xbutton.x << ' ' << ev->xbutton.y << std::endl;
-      mouse_button(ev->xbutton.button, 1, ev->xbutton.x, ev->xbutton.y);
+      globals::to_draw = true;
+      globals::redisp_pending = true;
+      globals::global_x = ev->xbutton.x;
+      globals::global_y = ev->xbutton.y;
       break;
     }
     case ButtonRelease: {
-      std::cout << "Release: " << ev->xbutton.x << ' ' << ev->xbutton.y << std::endl;
-      mouse_button(ev->xbutton.button - Button1, 0, ev->xbutton.x, ev->xbutton.y);
+      globals::to_draw = false;
+      globals::redisp_pending = true;
       break;
     }
     case MotionNotify: {
-      mouse_motion(ev->xmotion.x, ev->xmotion.y);
+      globals::global_x = ev->xmotion.x;
+      globals::global_y = ev->xmotion.y;
+      globals::to_draw = true;
+      globals::redisp_pending = true;
       break;
     }
   }
   return quit;
 }
 
+}
 
 int main() {
+  Display *dpy;
+  Window win;
+
   if ((dpy = XOpenDisplay(nullptr)) == nullptr) {
     std::cerr << "failed in open display" << std::endl;
     return 1;
   }
 
-  xa_wm_prot = XInternAtom(dpy, "WM_PROTOCOLS", False);
-  xa_wm_del_win = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
+  globals::xa_wm_prot = XInternAtom(dpy, "WM_PROTOCOLS", false);
+  globals::xa_wm_del_win = XInternAtom(dpy, "WM_DELETE_WINDOW", false);
 
-  if (!(win = create_window(800, 600))) {
+  if (!(win = create_window(dpy, 800, 600))) {
     std::cerr << "fail create window" << std::endl;
     return 2;
   }
@@ -206,15 +191,16 @@ int main() {
     do {
       XNextEvent(dpy, &ev);
       if (handle_event(&ev)) {
+        XUnmapWindow(dpy, win);
         XDestroyWindow(dpy, win);
         XCloseDisplay(dpy);
         return 0;
       }
     } while (XPending(dpy));
 
-    if (redisp_pending) {
-      redisp_pending = false;
-      redraw();
+    if (globals::redisp_pending) {
+      globals::redisp_pending = false;
+      redraw(dpy, win);
     }
   }
 }

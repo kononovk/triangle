@@ -6,15 +6,13 @@
 
 #IncludeRegexTransform: 
 
-/home/nickolay/prog/triangle/main.cpp
+/home/nickolay/prog/triangle/triangle.cpp
+glad/glad.h
+-
+GLFW/glfw3.h
+-
 iostream
 -
-X11/Xlib.h
--
-GL/glx.h
--
-GL/gl.h
--
-GL/glu.h
+cmath
 -
 

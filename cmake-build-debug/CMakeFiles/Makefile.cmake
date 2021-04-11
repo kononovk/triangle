@@ -11,17 +11,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "CMakeFiles/3.19.7/CMakeCCompiler.cmake"
   "CMakeFiles/3.19.7/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.19.7/CMakeSystem.cmake"
-  "/usr/lib64/cmake/assimp-5.0/assimp-config-version.cmake"
-  "/usr/lib64/cmake/assimp-5.0/assimp-config.cmake"
-  "/usr/lib64/cmake/assimp-5.0/assimpTargets-release.cmake"
-  "/usr/lib64/cmake/assimp-5.0/assimpTargets.cmake"
-  "/usr/lib64/cmake/glfw3/glfw3Config.cmake"
-  "/usr/lib64/cmake/glfw3/glfw3ConfigVersion.cmake"
-  "/usr/lib64/cmake/glfw3/glfw3Targets-noconfig.cmake"
-  "/usr/lib64/cmake/glfw3/glfw3Targets.cmake"
-  "/usr/lib64/cmake/glm/glmConfig.cmake"
-  "/usr/lib64/cmake/glm/glmConfigVersion.cmake"
-  "/usr/lib64/cmake/glm/glmTargets.cmake"
   "/usr/share/cmake-3.19/Modules/CMakeCInformation.cmake"
   "/usr/share/cmake-3.19/Modules/CMakeCXXInformation.cmake"
   "/usr/share/cmake-3.19/Modules/CMakeCommonLanguageInclude.cmake"
@@ -41,7 +30,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/share/cmake-3.19/Modules/Compiler/GNU.cmake"
   "/usr/share/cmake-3.19/Modules/FindFontconfig.cmake"
   "/usr/share/cmake-3.19/Modules/FindFreetype.cmake"
-  "/usr/share/cmake-3.19/Modules/FindGLEW.cmake"
   "/usr/share/cmake-3.19/Modules/FindOpenGL.cmake"
   "/usr/share/cmake-3.19/Modules/FindPackageHandleStandardArgs.cmake"
   "/usr/share/cmake-3.19/Modules/FindPackageMessage.cmake"
@@ -71,5 +59,5 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/task1.dir/DependInfo.cmake"
+  "CMakeFiles/main.dir/DependInfo.cmake"
   )

@@ -4,8 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/nickolay/prog/triangle/main.cpp" "/home/nickolay/prog/triangle/cmake-build-debug/CMakeFiles/task1.dir/main.cpp.o"
-  "/home/nickolay/prog/triangle/window.cpp" "/home/nickolay/prog/triangle/cmake-build-debug/CMakeFiles/task1.dir/window.cpp.o"
+  "/home/nickolay/prog/triangle/triangle.cpp" "/home/nickolay/prog/triangle/cmake-build-debug/CMakeFiles/task1.dir/triangle.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "Clang")
 

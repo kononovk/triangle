@@ -37,8 +37,8 @@
 					<DistClean command="/usr/bin/make -j8 -f &quot;/home/nickolay/prog/triangle/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="triangle">
-				<Option output="/home/nickolay/prog/triangle/cmake-build-debug/triangle" prefix_auto="0" extension_auto="0"/>
+			<Target title="main">
+				<Option output="/home/nickolay/prog/triangle/cmake-build-debug/main" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/home/nickolay/prog/triangle/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
@@ -52,14 +52,14 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/nickolay/prog/triangle/cmake-build-debug/Makefile&quot;  VERBOSE=1 triangle"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/nickolay/prog/triangle/cmake-build-debug/Makefile&quot;  VERBOSE=1 main"/>
 					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/nickolay/prog/triangle/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/make -j8 -f &quot;/home/nickolay/prog/triangle/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/make -j8 -f &quot;/home/nickolay/prog/triangle/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 				</MakeCommands>
 			</Target>
-			<Target title="triangle/fast">
-				<Option output="/home/nickolay/prog/triangle/cmake-build-debug/triangle" prefix_auto="0" extension_auto="0"/>
+			<Target title="main/fast">
+				<Option output="/home/nickolay/prog/triangle/cmake-build-debug/main" prefix_auto="0" extension_auto="0"/>
 				<Option working_dir="/home/nickolay/prog/triangle/cmake-build-debug"/>
 				<Option object_output="./"/>
 				<Option type="1"/>
@@ -73,7 +73,7 @@
 					<Add directory="/usr/include"/>
 				</Compiler>
 				<MakeCommands>
-					<Build command="/usr/bin/make -j8 -f &quot;/home/nickolay/prog/triangle/cmake-build-debug/Makefile&quot;  VERBOSE=1 triangle/fast"/>
+					<Build command="/usr/bin/make -j8 -f &quot;/home/nickolay/prog/triangle/cmake-build-debug/Makefile&quot;  VERBOSE=1 main/fast"/>
 					<CompileFile command="/usr/bin/make -j8 -f &quot;/home/nickolay/prog/triangle/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
 					<Clean command="/usr/bin/make -j8 -f &quot;/home/nickolay/prog/triangle/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
 					<DistClean command="/usr/bin/make -j8 -f &quot;/home/nickolay/prog/triangle/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
@@ -81,7 +81,7 @@
 			</Target>
 		</Build>
 		<Unit filename="/home/nickolay/prog/triangle/main.cpp">
-			<Option target="triangle"/>
+			<Option target="main"/>
 		</Unit>
 		<Unit filename="/home/nickolay/prog/triangle/CMakeLists.txt">
 			<Option virtualFolder="CMake Files\"/>
