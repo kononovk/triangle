@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/nickolay/prog/triangle/main.cpp
+iostream
+-
+X11/Xlib.h
+-
+GL/glx.h
+-
+GL/gl.h
+-
+GL/glu.h
+-
+
