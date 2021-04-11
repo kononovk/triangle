@@ -1,1 +1,0 @@
-/usr/bin/clang++ -g CMakeFiles/triangle.dir/main.cpp.o -o triangle 
